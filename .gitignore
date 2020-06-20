@@ -35,3 +35,10 @@ hs_err_pid*
 /captures
 .externalNativeBuild
 .cxx
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/gradle.xml
+/.idea/jarRepositories.xml
+/.idea/misc.xml
+/.idea/codeStyles/Project.xml
+/.idea/runConfigurations.xml
+/.idea/vcs.xml
