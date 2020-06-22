@@ -1,8 +1,5 @@
-package com.ssh.currencyconvert
+package com.ssh.currencyconvert.repositories
 
-import com.ssh.currencyconvert.repositories.CurrencyLayerApi
-import com.ssh.currencyconvert.repositories.CurrencyLayerRepository
-import com.ssh.currencyconvert.repositories.CurrencyLayerRepositoryImpl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -16,7 +13,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import utils.MockResponseFileReader
 import java.util.concurrent.TimeUnit
 
-class GetLiveExchangeRateTest {
+class CurrencyLayerRepositoryTest {
     @get:Rule
     var mockitoRule = MockitoJUnit.rule()
 
@@ -27,9 +24,8 @@ class GetLiveExchangeRateTest {
 
     @Before
     fun initTest() {
-        //currencyLayerRepository = CurrencyLayerRepositoryImpl()
         server = MockWebServer()
-        server.start(8000)
+        server.start(8080)
         currencyLayerApi = Retrofit.Builder()
             .baseUrl(server.url("/"))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -45,6 +41,26 @@ class GetLiveExchangeRateTest {
         server.shutdown()
     }
 
+    @Test
+    fun executeGetCurrencies() {
+        print("Server Url: ${server.hostName}")
+        server.apply {
+            enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody(MockResponseFileReader("test_currencies.json").content)
+            )
+        }
+
+        currencyLayerRepository.getSupportedCurrencyList()
+            .test()
+            .awaitDone(3, TimeUnit.SECONDS)
+            .assertComplete()
+            .assertValueCount(1)
+            .assertValue { it.currencies["AED"] == "United Arab Emirates Dirham" }
+            .assertNoErrors()
+    }
+
     /**
      * Response onSuccess test
      *
@@ -53,7 +69,7 @@ class GetLiveExchangeRateTest {
      * assertion equality check from response with provided values.
      */
     @Test
-    fun executeGetLiveExchangeRate() {
+    fun test_getLiveExchangeRate() {
 
         server.apply {
             enqueue(
