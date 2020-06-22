@@ -15,12 +15,12 @@ interface CurrencyLayerApi {
      * response: json of list of supported currencies.
      */
 
-    @GET(API_BASE_URL.plus("list"))
+    @GET("list")
     fun getSupportedCurrencies(
         @Query("access_key") format: String
     ): Single<Currencies>
 
-    @GET(API_BASE_URL.plus("live"))
+    @GET("live")
     fun getLiveExchangeRate(
         @Query("access_key") format: String
     ): Single<CurrencyRateQuotes>
